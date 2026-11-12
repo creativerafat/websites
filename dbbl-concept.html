@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Dutch-Bangla Bank, Concept Redesign</title>
+<meta name="description" content="Unofficial concept redesign of the Dutch-Bangla Bank website. Not the official site.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* ===== BRAND TOKENS: swap these to the bank's exact brand values and the whole page follows ===== */
+:root{
+  --brand:#0E8A3E;      /* primary (green) */
+  --brand-d:#086A2E;
+  --brand-l:#E6F5EC;
+  --accent:#0B3C8C;     /* secondary (deep blue) */
+  --accent-l:#E7EEFA;
+  --signal:#E8452C;     /* small alerts only */
+  --ink:#0A1A12; --muted:#5B6B62; --line:#E4EAE6; --soft:#F5F8F6; --white:#fff;
+  --display:'Sora','Segoe UI',system-ui,sans-serif;
+  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--white);color:var(--ink);font:400 18px/1.55 var(--body);-webkit-font-smoothing:antialiased;overflow-x:clip}
+h1,h2,h3,p{margin:0}
+a{color:inherit}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.in{max-width:1280px;margin:0 auto;padding-inline:max(20px,env(safe-area-inset-left,0px)) max(20px,env(safe-area-inset-right,0px))}
+section{position:relative}
+
+/* concept ribbon */
+.rib{background:var(--ink);color:#fff;font:500 13px/1.3 var(--body);text-align:center;padding:9px 16px}
+.rib a{color:#7BE3A0;text-underline-offset:3px}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.82);backdrop-filter:saturate(180%) blur(18px);-webkit-backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid var(--line)}
+.navin{display:flex;align-items:center;gap:18px;height:64px}
+.mark{display:flex;align-items:center;gap:10px;text-decoration:none;font:800 1.15rem/1 var(--display);letter-spacing:-.03em}
+.mark i{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--brand);color:#fff;font:800 14px var(--display);font-style:normal;letter-spacing:0}
+.mark small{display:block;font:500 10.5px var(--body);color:var(--muted);letter-spacing:.04em;margin-top:3px}
+.links{display:flex;gap:2px;margin-left:auto}
+.links a{font:600 14px var(--body);text-decoration:none;color:var(--muted);padding:8px 14px;border-radius:999px;transition:.2s}
+.links a:hover{background:var(--soft);color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:14px 26px;font:700 16px var(--display);letter-spacing:-.01em;text-decoration:none;border:2px solid transparent;transition:transform .3s cubic-bezier(.2,.9,.3,1.3),background .2s,box-shadow .3s;white-space:nowrap}
+.btn:hover{transform:translateY(-2px) scale(1.02)}
+.btn-brand{background:var(--brand);color:#fff}
+.btn-brand:hover{background:var(--brand-d);box-shadow:0 16px 30px -14px rgba(14,138,62,.7)}
+.btn-ghost{border-color:var(--ink);color:var(--ink);background:transparent}
+.btn-ghost:hover{background:var(--ink);color:#fff}
+.btn-sm{padding:9px 18px;font-size:14px}
+.navin .btn{margin-left:8px}
+
+/* scroll engine variables. --p is written by JS (0 to 1). */
+[data-pin]{position:relative}
+.sticky{position:sticky;top:0;height:100svh;overflow:hidden}
+.clamp01{--x:0}
+
+/* ===== HERO ===== */
+.hero{height:340svh}
+.hero .sticky{top:64px;height:calc(100svh - 64px);background:radial-gradient(70% 60% at 50% 100%,var(--brand-l),#fff 70%)}
+.hl{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding-inline:max(20px,env(safe-area-inset-left,0px));
+  --a:clamp(0,calc(1 - (var(--p) - .1) * 3.4),1);
+  opacity:var(--a);transform:translateY(calc(var(--p) * -22svh)) scale(calc(1 - var(--p) * .5));transform-origin:50% 40%;filter:blur(calc((1 - var(--a)) * 14px))}
+.hl h1{font:800 clamp(3.3rem,12.5vw,11.5rem)/.9 var(--display);letter-spacing:-.055em;max-width:9em}
+.hl h1 em{font-style:normal;background:linear-gradient(100deg,var(--brand) 20%,var(--accent) 110%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hl p{font:600 clamp(1.05rem,2vw,1.5rem)/1.3 var(--body);color:var(--muted);margin-top:22px}
+.scrollcue{position:absolute;bottom:26px;left:0;right:0;text-align:center;font:600 12px var(--display);letter-spacing:.18em;text-transform:uppercase;color:var(--muted);opacity:clamp(0,calc(1 - var(--p) * 10),1)}
+.scrollcue i{display:block;width:2px;height:34px;margin:10px auto 0;background:linear-gradient(var(--brand),transparent);animation:cue 1.6s ease-in-out infinite;transform-origin:top}
+@keyframes cue{0%{transform:scaleY(0)}60%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
+
+.phonewrap{position:absolute;left:50%;bottom:0;width:min(64vw,calc(68svh * .5));aspect-ratio:.5;translate:-50% 0;perspective:1600px;
+  --b:clamp(0,calc((var(--p) - .1) * 2.3),1);
+  transform:translateY(calc((1 - var(--b)) * 85svh)) scale(calc(.75 + var(--b) * .25 + var(--g,0) * .08));transform-origin:50% 100%}
+.phone{position:absolute;inset:0;border-radius:11% / 5.4%;background:#0b0f0d;padding:2.4%;box-shadow:0 0 0 2px #2a312d inset,0 60px 80px -30px rgba(10,26,18,.55),0 20px 30px -20px rgba(10,26,18,.5);
+  transform:rotateX(calc((1 - var(--b)) * 38deg));transform-origin:50% 100%}
+.screen{position:absolute;inset:2.4%;border-radius:9.4% / 4.6%;background:#fff;overflow:hidden;font-size:calc(min(64vw,68svh * .5) / 22)}
+.sbar{height:6.2em;background:linear-gradient(160deg,var(--brand),var(--brand-d));color:#fff;padding:2.3em 1.5em 0}
+.sbar b{font:800 1.5em/1 var(--display);letter-spacing:-.03em;display:block}
+.sbar span{font:500 .78em var(--body);opacity:.85}
+.sbody{padding:1.5em;display:grid;gap:1.1em}
+.qr{margin:.4em auto 0;width:62%;aspect-ratio:1;display:grid;grid-template:repeat(11,1fr)/repeat(11,1fr);gap:.12em;padding:.7em;border:.14em solid var(--ink);border-radius:1em;background:#fff}
+.qr i{background:var(--ink);border-radius:.14em;opacity:0;animation:qr 3s ease-in-out infinite}
+.qr i.on{opacity:1}
+@keyframes qr{50%{opacity:.35}}
+.big{font:800 1.9em/1 var(--display);letter-spacing:-.04em;text-align:center}
+.pill{background:var(--brand-l);color:var(--brand-d);border-radius:999px;font:700 .82em var(--display);text-align:center;padding:.9em}
+.pill.s{background:var(--ink);color:#fff}
+.sample{position:absolute;bottom:1em;left:0;right:0;text-align:center;font:500 .6em var(--body);color:var(--muted)}
+.notch{position:absolute;top:3.4%;left:50%;translate:-50% 0;width:28%;height:2.3%;border-radius:99px;background:#0b0f0d;z-index:3}
+
+.co{position:absolute;max-width:min(24vw,300px);--c:clamp(0,calc((var(--p) - .52) * 3.4),1);opacity:var(--c);filter:blur(calc((1 - var(--c)) * 8px))}
+.co b{display:block;font:800 clamp(1.5rem,3.6vw,3rem)/1 var(--display);letter-spacing:-.04em}
+.co span{display:block;margin-top:10px;font:500 clamp(.9rem,1.3vw,1.1rem)/1.4 var(--body);color:var(--muted)}
+.co.l{left:max(20px,4vw);top:24%;transform:translateX(calc((1 - var(--c)) * -80px));text-align:left}
+.co.r{right:max(20px,4vw);top:46%;transform:translateX(calc((1 - var(--c)) * 80px));text-align:right}
+.co.l b{color:var(--brand)}
+.co.r b{color:var(--accent)}
+.anyt{position:absolute;left:0;right:0;top:3%;text-align:center;font:800 clamp(2.2rem,6.4vw,5.6rem)/.92 var(--display);letter-spacing:-.05em;z-index:-1;--c:clamp(0,calc((var(--p) - .3) * 3),1);opacity:var(--c);transform:scale(calc(1.2 - var(--c) * .2));
+  color:var(--ink)}
+.anyt em{font-style:normal;color:var(--brand)}
+.anyt br{display:none}
+
+/* ===== STATEMENT (word by word light-up) ===== */
+.state{height:260svh;background:var(--ink);color:#fff}
+.state .sticky{display:grid;place-items:center}
+.state p{font:800 clamp(1.9rem,5.4vw,4.6rem)/1.06 var(--display);letter-spacing:-.04em;max-width:17em;margin-inline:auto;text-wrap:balance}
+.state p .w{opacity:clamp(.16,calc((var(--p) * 1.25 - 0.06) * var(--n) - var(--i) + 1),1);transition:color .2s}
+.state p .w.hi{color:#7BE3A0}
+.kick{font:700 13px var(--display);letter-spacing:.2em;text-transform:uppercase;color:var(--brand);margin-bottom:18px;display:block}
+.state .kick{text-align:center;color:#7BE3A0}
+
+/* ===== STATS ===== */
+.stats{padding-block:clamp(80px,12vw,170px);background:#fff}
+.stats h2,.sec-h{font:800 clamp(2.6rem,8vw,7rem)/.94 var(--display);letter-spacing:-.05em;text-wrap:balance}
+.sec-h em{font-style:normal;color:var(--brand)}
+.sgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,2vw,24px);margin-top:clamp(36px,6vw,80px)}
+.stat{background:var(--soft);border-radius:28px;padding:clamp(22px,3vw,40px);min-height:240px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;transition:transform .5s cubic-bezier(.2,.9,.3,1.2)}
+.stat:hover{transform:translateY(-8px)}
+.stat.hero-s{grid-column:span 2;background:var(--brand);color:#fff}
+.stat .n{font:800 clamp(3rem,8vw,7.4rem)/.9 var(--display);letter-spacing:-.06em}
+.stat.hero-s .n{font-size:clamp(3.4rem,11vw,10rem)}
+.stat .l{font:600 1.05rem/1.3 var(--body);color:var(--muted);margin-top:14px}
+.stat.hero-s .l{color:rgba(255,255,255,.85)}
+.stat:nth-child(4){background:var(--accent);color:#fff}
+.stat:nth-child(4) .l{color:rgba(255,255,255,.85)}
+.stat::after{content:"";position:absolute;right:-30px;bottom:-30px;width:130px;height:130px;border-radius:50%;background:currentColor;opacity:.06}
+.rv{opacity:0;transform:translateY(60px) scale(.97);transition:opacity 1s cubic-bezier(.2,.8,.2,1),transform 1s cubic-bezier(.2,.8,.2,1);transition-delay:calc(var(--d,0) * 90ms)}
+.rv.go{opacity:1;transform:none}
+
+/* ===== PRODUCTS: horizontal pinned ===== */
+.prod{height:480svh;background:var(--soft)}
+.prod .sticky{display:flex;flex-direction:column;justify-content:center;gap:clamp(18px,3vh,40px)}
+.phead{display:flex;flex-wrap:wrap;gap:12px 40px;justify-content:space-between;align-items:end}
+.phead .sec-h{font-size:clamp(2.2rem,6vw,5.2rem)}
+.bar{height:4px;background:var(--line);border-radius:4px;overflow:hidden;width:min(240px,100%)}
+.bar i{display:block;height:100%;width:100%;background:var(--brand);transform-origin:0 50%;transform:scaleX(var(--p))}
+.track{display:flex;gap:clamp(14px,2vw,24px);padding-inline:max(20px,env(safe-area-inset-left,0px));width:max-content;will-change:transform;transform:translateX(calc(var(--p) * var(--dx,0) * -1px))}
+.pc{width:min(78vw,400px);height:min(52svh,470px);border-radius:32px;background:#fff;padding:clamp(22px,2.4vw,32px);display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 1px 0 var(--line),0 30px 50px -36px rgba(10,26,18,.35);flex:none;position:relative;overflow:hidden;
+  --e:clamp(0,calc(1 - var(--k,0) * .12),1);transition:transform .5s cubic-bezier(.2,.9,.3,1.2)}
+.pc:hover{transform:translateY(-8px)}
+.pc.g{background:var(--brand);color:#fff}
+.pc.b{background:var(--accent);color:#fff}
+.pc.k{background:var(--ink);color:#fff}
+.pc .tag{font:700 12px var(--display);letter-spacing:.16em;text-transform:uppercase;opacity:.7}
+.pc h3{font:800 clamp(1.8rem,3vw,2.5rem)/1 var(--display);letter-spacing:-.045em;margin-top:10px}
+.pc p{font-size:1rem;line-height:1.45;margin-top:12px;opacity:.86}
+.pc a{font:700 14px var(--display);text-decoration:none;display:inline-flex;gap:6px;align-items:center;margin-top:16px}
+.pc a:hover{gap:12px}
+.pc a{transition:gap .25s}
+.art{height:36%;display:grid;place-items:center;position:relative}
+.art svg{height:100%;width:auto;max-width:100%}
+
+/* ===== CARD 3D scene ===== */
+.cs{height:420svh;background:#fff}
+.cs .sticky{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(20px,4vw,60px);align-items:center;max-width:1280px;margin:0 auto;padding-inline:max(20px,env(safe-area-inset-left,0px)) max(20px,env(safe-area-inset-right,0px))}
+.caps{position:relative;height:min(50svh,420px)}
+.cap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;opacity:0;transform:translateY(40px);filter:blur(10px);transition:opacity .7s,transform .8s cubic-bezier(.2,.8,.2,1),filter .7s;pointer-events:none}
+.cap h2{font:800 clamp(2.6rem,6.4vw,5.6rem)/.94 var(--display);letter-spacing:-.05em}
+.cap p{font-size:clamp(1.05rem,1.6vw,1.3rem);color:var(--muted);margin-top:18px;max-width:24em}
+.cs[data-step="0"] .cap0,.cs[data-step="1"] .cap1,.cs[data-step="2"] .cap2{opacity:1;transform:none;filter:none;pointer-events:auto}
+.dots{display:flex;gap:8px;margin-top:26px}
+.dots i{width:34px;height:5px;border-radius:5px;background:var(--line);transition:.4s}
+.cs[data-step="0"] .dots i:nth-child(1),.cs[data-step="1"] .dots i:nth-child(2),.cs[data-step="2"] .dots i:nth-child(3){background:var(--brand);width:58px}
+.stagecard{perspective:1800px;display:grid;place-items:center;filter:drop-shadow(0 50px 40px rgba(10,26,18,.3))}
+.card3d{width:min(86vw,460px);aspect-ratio:1.586;position:relative;transform-style:preserve-3d;
+  transform:rotateX(-10deg) rotateY(calc(-25deg + var(--p) * 380deg)) rotateZ(-3deg);}
+.cf{position:absolute;inset:0;border-radius:6.2% / 9.8%;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;color:#fff;padding:7%;display:flex;flex-direction:column;justify-content:space-between;transition:background 1s}
+.cf.front{background:linear-gradient(135deg,var(--brand),var(--brand-d))}
+.cf.back{transform:rotateY(180deg);background:#E9EEEB;color:var(--ink);padding:0}
+.cs[data-step="1"] .cf.front{background:linear-gradient(135deg,var(--accent),#06245A)}
+.cs[data-step="2"] .cf.front{background:linear-gradient(135deg,#17261E,#050A07)}
+.cf.front::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.28) 48%,transparent 62%);transform:translateX(calc(-60% + var(--p) * 380%));pointer-events:none}
+.cf .top{display:flex;justify-content:space-between;align-items:start;font:800 1.05rem var(--display);letter-spacing:-.03em}
+.cf .top small{font:600 .7rem var(--display);letter-spacing:.16em;text-transform:uppercase;opacity:.85}
+.chip{width:17%;aspect-ratio:1.3;border-radius:14%;background:linear-gradient(135deg,#F3DE9A,#C69A3A);position:relative}
+.chip::before{content:"";position:absolute;inset:18% 12%;border-top:2px solid rgba(0,0,0,.25);border-bottom:2px solid rgba(0,0,0,.25)}
+.cf .num{font:600 clamp(1rem,3.4vw,1.5rem) var(--display);letter-spacing:.12em}
+.cf .nm{font:600 .78rem var(--display);letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.stripe{height:20%;background:#111;margin-top:9%}
+.sig{margin:6% 7% 0;height:15%;background:repeating-linear-gradient(45deg,#fff 0 6px,#dde5e0 6px 12px);display:flex;align-items:center;justify-content:end;padding-right:6%;font:600 .8rem var(--display);color:#444}
+.bnote{padding:5% 7%;font:500 .68rem/1.4 var(--body);color:#556}
+
+/* ===== SAFETY ===== */
+.safe{padding-block:clamp(80px,12vw,170px);background:var(--brand-l)}
+.tips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,2vw,24px);margin-top:clamp(32px,5vw,64px)}
+.tip{background:#fff;border-radius:28px;padding:clamp(22px,3vw,36px);display:grid;gap:14px;align-content:start}
+.tip i{display:grid;place-items:center;width:52px;height:52px;border-radius:16px;background:var(--brand);color:#fff;font:800 1.2rem var(--display);font-style:normal}
+.tip h3{font:800 1.5rem/1.05 var(--display);letter-spacing:-.04em}
+.tip p{color:var(--muted);font-size:1rem}
+.tip:nth-child(2) i{background:var(--accent)}
+.tip:nth-child(3) i{background:var(--ink)}
+
+/* ===== CTA / contact ===== */
+.cta{background:var(--ink);color:#fff;padding-block:clamp(80px,12vw,170px);overflow:hidden;position:relative}
+.cta::before{content:"";position:absolute;width:900px;height:900px;border-radius:50%;left:50%;top:-30%;translate:-50% 0;background:radial-gradient(closest-side,rgba(14,138,62,.55),transparent);pointer-events:none}
+.cta .in{position:relative;text-align:center}
+.cta .kick{color:#7BE3A0}
+.cta h2{font:800 clamp(2.8rem,10vw,9rem)/.9 var(--display);letter-spacing:-.06em;--s:clamp(0,calc(var(--p) * 1.6),1);transform:scale(calc(.82 + var(--s) * .18));opacity:calc(.3 + var(--s) * .7)}
+.cta h2 em{font-style:normal;color:#7BE3A0}
+.hot{display:inline-flex;align-items:center;gap:14px;margin-top:34px;background:#fff;color:var(--ink);border-radius:999px;padding:12px 32px 12px 14px;text-decoration:none;transition:transform .3s cubic-bezier(.2,.9,.3,1.3)}
+.hot:hover{transform:scale(1.04)}
+.hot b{display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:var(--brand);color:#fff;font-size:1.4rem}
+.hot span{font:800 clamp(1.8rem,5vw,3rem)/1 var(--display);letter-spacing:-.04em}
+.hot small{display:block;font:600 12px var(--body);color:var(--muted);letter-spacing:.04em}
+.cgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,2vw,24px);margin-top:clamp(40px,6vw,80px);text-align:left}
+.cc{border:1px solid rgba(255,255,255,.18);border-radius:24px;padding:24px;display:grid;gap:6px}
+.cc b{font:700 12px var(--display);letter-spacing:.16em;text-transform:uppercase;color:#7BE3A0}
+.cc span,.cc a{font:500 1.05rem/1.4 var(--body);overflow-wrap:anywhere}
+.foot{background:#050C08;color:rgba(255,255,255,.65);padding-block:28px calc(28px + env(safe-area-inset-bottom,0px));font:400 13px/1.5 var(--body)}
+.foot .in{display:flex;flex-wrap:wrap;gap:8px 30px;justify-content:space-between}
+.foot a{text-underline-offset:3px}
+
+@media (max-width:900px){
+  .links{display:none}
+  .navin .btn{margin-left:auto}
+  .sgrid,.tips,.cgrid{grid-template-columns:minmax(0,1fr)}
+  .stat.hero-s{grid-column:auto}
+  .cs .sticky{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;align-content:center;gap:0}
+  .caps{height:40svh;order:2}
+  .cap h2{font-size:clamp(2.2rem,10vw,3.6rem)}
+  .co{max-width:36vw}
+  .co.l{top:14%}
+  .co.r{top:36%}
+}
+@media (max-width:560px){
+  body{font-size:17px}
+  .mark small{display:none}
+  .co{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .hero,.state,.prod,.cs{height:auto}
+  .sticky{position:relative;height:auto;min-height:100svh}
+  .hero .sticky{height:calc(100svh - 64px)}
+  .track{transform:none;overflow-x:auto}
+  .rv{opacity:1;transform:none;transition:none}
+  .scrollcue i,.qr i{animation:none}
+  .cap{position:relative;opacity:1;transform:none;filter:none;height:auto;margin-bottom:20px}
+  .caps{height:auto}
+}
+</style>
+</head>
+<body>
+<div class="rib">Unofficial concept redesign. Not the official website of Dutch-Bangla Bank PLC. <a href="https://www.dutchbanglabank.com/" target="_blank" rel="noopener">Go to the official site ↗</a></div>
+
+<header class="nav">
+  <div class="in navin">
+    <a class="mark" href="#top" aria-label="Concept home"><i>DB</i><span>Dutch-Bangla Bank<small>Concept redesign</small></span></a>
+    <nav class="links" aria-label="Sections"><a href="#nexuspay">NexusPay</a><a href="#numbers">Numbers</a><a href="#products">Products</a><a href="#cards">Cards</a><a href="#safe">Stay safe</a><a href="#contact">Contact</a></nav>
+    <a class="btn btn-brand btn-sm" href="https://www.dutchbanglabank.com/" target="_blank" rel="noopener">Internet Banking ↗</a>
+  </div>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero" id="nexuspay" data-pin aria-label="Welcome">
+    <div class="sticky">
+      <div class="anyt" aria-hidden="true">Anytime.<br><em>Anywhere.</em></div>
+      <div class="hl">
+        <div>
+          <h1>Your <em>Trusted</em> Partner.</h1>
+          <p>Bangladesh's first joint venture bank, now in your pocket.</p>
+        </div>
+      </div>
+      <div class="scrollcue" aria-hidden="true">Scroll<i></i></div>
+
+      <div class="phonewrap" aria-hidden="true">
+        <div class="phone"><div class="notch"></div>
+          <div class="screen">
+            <div class="sbar"><b>NexusPay</b><span>Cardless banking</span></div>
+            <div class="sbody">
+              <div class="big">Cash, no card.</div>
+              <div class="qr" id="qr"></div>
+              <div class="pill">Approve on your phone</div>
+              <div class="pill s">Done</div>
+            </div>
+            <div class="sample">Sample screen for the concept</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="co l" aria-hidden="true"><b>No card.<br>No skimming.</b><span>NexusPay is described as the first fully cardless banking solution in Bangladesh.</span></div>
+      <div class="co r" aria-hidden="true"><b>9,109<br>ATMs.</b><span>Plus 5,620 agent outlets across the country.</span></div>
+    </div>
+  </section>
+
+  <!-- STATEMENT -->
+  <section class="state" data-pin aria-label="Our story">
+    <div class="sticky"><div class="in">
+      <span class="kick">Our story</span>
+      <p id="story" data-words>Founded by local shareholders and the Dutch FMO, Dutch-Bangla Bank began as the country's first joint venture bank. Thirty years on, it is built to be simple, safe and always within reach.</p>
+    </div></div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats" id="numbers" aria-labelledby="h-num">
+    <div class="in">
+      <span class="kick rv">The scale of it</span>
+      <h2 class="sec-h rv" id="h-num" style="--d:1">Everywhere you <em>need us to be.</em></h2>
+      <div class="sgrid">
+        <div class="stat hero-s rv"><div class="n"><span data-count="64120000">0</span>+</div><div class="l">happy customers</div></div>
+        <div class="stat rv" style="--d:1"><div class="n"><span data-count="30">0</span></div><div class="l">years in banking</div></div>
+        <div class="stat rv" style="--d:1"><div class="n"><span data-count="243">0</span></div><div class="l">branches</div></div>
+        <div class="stat rv" style="--d:2"><div class="n"><span data-count="350">0</span></div><div class="l">sub-branches</div></div>
+        <div class="stat rv" style="--d:3"><div class="n"><span data-count="9109">0</span></div><div class="l">ATMs</div></div>
+        <div class="stat rv" style="--d:4"><div class="n"><span data-count="5620">0</span></div><div class="l">agent banking outlets</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section class="prod" id="products" data-pin aria-labelledby="h-prod">
+    <div class="sticky">
+      <div class="in phead">
+        <div><span class="kick">Products &amp; services</span><h2 class="sec-h" id="h-prod">Banking, <em>your way.</em></h2></div>
+        <div class="bar" aria-hidden="true"><i></i></div>
+      </div>
+      <div class="track" id="track">
+        <article class="pc g"><div><span class="tag">Cards</span><h3>Debit and credit.</h3><p>Instant, Visa and Mastercard debit. Visa and Mastercard credit in Classic and Gold, local and international.</p><a href="https://www.dutchbanglabank.com/" target="_blank" rel="noopener">Explore cards <span aria-hidden="true">→</span></a></div>
+          <div class="art"><svg viewBox="0 0 160 100" aria-hidden="true"><rect x="2" y="6" width="120" height="76" rx="10" fill="#fff" opacity=".28"/><rect x="26" y="18" width="130" height="78" rx="10" fill="#fff"/><rect x="38" y="36" width="24" height="18" rx="4" fill="#E3C37A"/><path d="M38 76h60" stroke="#0E8A3E" stroke-width="6" stroke-linecap="round"/></svg></div></article>
+        <article class="pc b"><div><span class="tag">NexusPay</span><h3>Cardless, on purpose.</h3><p>The first fully cardless banking solution in Bangladesh.</p><a href="https://www.dutchbanglabank.com/" target="_blank" rel="noopener">See NexusPay <span aria-hidden="true">→</span></a></div>
+          <div class="art"><svg viewBox="0 0 100 100" aria-hidden="true"><rect x="28" y="4" width="44" height="92" rx="9" fill="none" stroke="#fff" stroke-width="5"/><path d="M40 40a14 14 0 0 1 20 0M34 32a24 24 0 0 1 32 0M46 48a6 6 0 0 1 8 0" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="58" r="3" fill="#fff"/></svg></div></article>
+        <article class="pc k"><div><span class="tag">Nexus Card</span><h3>Built against ATM fraud.</h3><p>Protects against ATM fraud, including skimming.</p><a href="https://www.dutchbanglabank.com/" target="_blank" rel="noopener">Learn more <span aria-hidden="true">→</span></a></div>
+          <div class="art"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 6 12 20v28c0 24 16 40 38 46 22-6 38-22 38-46V20Z" fill="none" stroke="#7BE3A0" stroke-width="5" stroke-linejoin="round"/><path d="M34 50l11 11 21-23" fill="none" stroke="#7BE3A0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg></div></article>
+        <article class="pc"><div><span class="tag" style="color:var(--brand)">Digital</span><h3>Internet Banking.</h3><p>Internet Banking, Internet Payment Gateway and 2FA registration.</p><a style="color:var(--brand)" href="https://www.dutchbanglabank.com/" target="_blank" rel="noopener">Go to Internet Banking <span aria-hidden="true">→</span></a></div>
+          <div class="art"><svg viewBox="0 0 120 90" aria-hidden="true"><rect x="6" y="6" width="108" height="66" rx="8" fill="none" stroke="#0E8A3E" stroke-width="5"/><path d="M34 82h52" stroke="#0E8A3E" stroke-width="5" stroke-linecap="round"/><path d="M24 54l20-18 16 12 28-26" fill="none" stroke="#0B3C8C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></article>
+        <article class="pc"><div><span class="tag" style="color:var(--accent)">Agent banking</span><h3>Close to home.</h3><p>Banking for underserved customers, through 5,620 agent outlets.</p><a style="color:var(--accent)" href="https://www.dutchbanglabank.com/" target="_blank" rel="noopener">About agent banking <span aria-hidden="true">→</span></a></div>
+          <div class="art"><svg viewBox="0 0 120 90" aria-hidden="true"><path d="M10 40 60 8l50 32v6H10Z" fill="#0B3C8C"/><rect x="18" y="46" width="84" height="34" fill="none" stroke="#0B3C8C" stroke-width="5"/><rect x="50" y="56" width="20" height="24" fill="#0E8A3E"/></svg></div></article>
+        <article class="pc"><div><span class="tag" style="color:var(--brand)">Offshore</span><h3>FDR &amp; NRCTA.</h3><p>Offshore Banking FDR and the Non-Resident Convertible Taka Account.</p><a style="color:var(--brand)" href="https://www.dutchbanglabank.com/" target="_blank" rel="noopener">See offshore options <span aria-hidden="true">→</span></a></div>
+          <div class="art"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="40" fill="none" stroke="#0E8A3E" stroke-width="5"/><ellipse cx="50" cy="50" rx="17" ry="40" fill="none" stroke="#0E8A3E" stroke-width="5"/><path d="M10 50h80M16 30h68M16 70h68" stroke="#0E8A3E" stroke-width="4"/></svg></div></article>
+        <article class="pc g"><div><span class="tag">UDYOG</span><h3>Young founders, first.</h3><p>Upazila-Driven Youth Opportunity for Growth, an SME and youth programme.</p><a href="https://www.dutchbanglabank.com/" target="_blank" rel="noopener">Read about UDYOG <span aria-hidden="true">→</span></a></div>
+          <div class="art"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 92V40" stroke="#fff" stroke-width="6" stroke-linecap="round"/><path d="M50 56C30 56 18 44 18 24c20 0 32 12 32 32ZM50 44C66 44 78 34 78 16 60 16 50 28 50 44Z" fill="#fff"/></svg></div></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARD 3D -->
+  <section class="cs" id="cards" data-pin data-step="0" aria-label="Cards">
+    <div class="sticky">
+      <div class="caps">
+        <div class="cap cap0"><span class="kick">Debit</span><h2>Spend it. <br>Anywhere.</h2><p>Instant, Visa and Mastercard debit, including international cards.</p><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div></div>
+        <div class="cap cap1"><span class="kick" style="color:var(--accent)">Credit</span><h2>Room to <br>grow.</h2><p>Visa and Mastercard credit cards in Classic and Gold, for local and international use.</p><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div></div>
+        <div class="cap cap2"><span class="kick" style="color:var(--ink)">Nexus Card</span><h2>Fraud, <br>blocked.</h2><p>Designed to protect against ATM fraud, including skimming.</p><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div></div>
+      </div>
+      <div class="stagecard" aria-hidden="true">
+        <div class="card3d">
+          <div class="cf front"><div class="top"><span>Dutch-Bangla Bank</span><small>Concept</small></div><div class="chip"></div><div><div class="num">•••• •••• •••• 0000</div><div class="nm" style="margin-top:10px">Cardholder name</div></div></div>
+          <div class="cf back"><div class="stripe"></div><div class="sig">123</div><div class="bnote">Concept artwork. Not a real card design.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SAFETY -->
+  <section class="safe" id="safe" aria-labelledby="h-safe">
+    <div class="in">
+      <span class="kick rv">Stay safe</span>
+      <h2 class="sec-h rv" id="h-safe" style="--d:1">Three habits that <em>protect your money.</em></h2>
+      <div class="tips">
+        <div class="tip rv"><i>1</i><h3>Keep your PIN and OTP to yourself.</h3><p>Nobody who works at a bank needs them. Never read them out, type them into a link or send them in a message.</p></div>
+        <div class="tip rv" style="--d:1"><i>2</i><h3>Turn on 2FA.</h3><p>Register for two-factor authentication so a stolen password alone cannot open your account.</p></div>
+        <div class="tip rv" style="--d:2"><i>3</i><h3>Use the official site.</h3><p>Type the bank's address yourself, or use the app. Be wary of links in messages, and of illegal forex trading offers.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta" id="contact" data-p aria-labelledby="h-cta">
+    <div class="in">
+      <span class="kick">Talk to us</span>
+      <h2 id="h-cta">Anytime.<br><em>Anywhere.</em></h2>
+      <a class="hot" href="tel:16216"><b aria-hidden="true">☎</b><span>16216<small>Call centre</small></span></a>
+      <div class="cgrid">
+        <div class="cc"><b>Head office</b><span><a href="tel:+8802223354196">02223354196-8</a><br><a href="tel:+8802223359229">02223359229</a></span></div>
+        <div class="cc"><b>Mobile</b><span><a href="tel:+8809666322001">09666322001</a><br><a href="tel:+8809678322001">09678322001</a></span></div>
+        <div class="cc"><b>Email &amp; SWIFT</b><span><a href="mailto:ccs.cmc@dutchbanglabank.com">ccs.cmc@dutchbanglabank.com</a><br>SWIFT: DBBLBDDH</span></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot"><div class="in"><span>Unofficial concept redesign for portfolio and discussion. Facts are taken from dutchbanglabank.com; the official site is the only source for rates, terms and services.</span><a href="https://www.dutchbanglabank.com/" target="_blank" rel="noopener">dutchbanglabank.com ↗</a></div></footer>
+
+<script>
+(function(){
+  var clamp=function(x,a,b){return Math.min(b,Math.max(a,x))};
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* sample QR */
+  var qr=document.getElementById('qr'),s=7;
+  for(var i=0;i<121;i++){var d=document.createElement('i'),r=Math.floor(i/11),c=i%11;
+    s=(s*9301+49297)%233280;
+    var finder=(r<3&&c<3)||(r<3&&c>7)||(r>7&&c<3);
+    if(finder||s/233280>.5)d.className='on';
+    d.style.animationDelay=(-(s%3000))+'ms';qr.appendChild(d)}
+
+  /* statement words */
+  var story=document.getElementById('story'),words=story.textContent.trim().split(/\s+/),hi={'first':1,'joint':1,'venture':1,'bank.':1,'simple,':1,'safe':1};
+  story.textContent='';
+  words.forEach(function(w,i){var sp=document.createElement('span');sp.className='w'+(hi[w.toLowerCase()]?' hi':'');sp.style.setProperty('--i',i);sp.textContent=w;story.appendChild(sp);story.appendChild(document.createTextNode(' '))});
+  story.style.setProperty('--n',words.length);
+
+  /* scroll-linked progress */
+  var items=Array.prototype.slice.call(document.querySelectorAll('[data-pin],[data-p]')).map(function(el){return{el:el,pin:el.hasAttribute('data-pin'),cur:0,tgt:0}});
+  var track=document.getElementById('track');
+  function measure(){var prod=document.getElementById('products');
+    var dx=Math.max(0,track.scrollWidth-innerWidth+24);prod.style.setProperty('--dx',dx);prod.style.height=(innerHeight*(1.1+dx/innerHeight*1.05))+'px'}
+  function target(it){
+    var r=it.el.getBoundingClientRect(),vh=innerHeight;
+    return it.pin?clamp(-r.top/Math.max(1,r.height-vh),0,1):clamp((vh-r.top)/(vh+r.height),0,1)}
+  var raf=0;
+  function frame(){
+    var busy=false;
+    items.forEach(function(it){
+      var r=it.el.getBoundingClientRect();
+      if(r.bottom<-innerHeight*.5||r.top>innerHeight*1.5)return;
+      it.tgt=target(it);
+      var dlt=it.tgt-it.cur;
+      if(Math.abs(dlt)>.0005){it.cur+=dlt*.14;busy=true}else it.cur=it.tgt;
+      it.el.style.setProperty('--p',it.cur.toFixed(4));
+      if(it.el.id==='cards'){var st=it.cur<.34?0:it.cur<.67?1:2;if(it.el.dataset.step!=st)it.el.dataset.step=st}
+    });
+    raf=busy?requestAnimationFrame(frame):0;
+  }
+  function kick(){if(!raf)raf=requestAnimationFrame(frame)}
+  if(reduce){items.forEach(function(it){it.el.style.setProperty('--p',1)})}
+  else{
+    addEventListener('scroll',kick,{passive:true});
+    addEventListener('resize',function(){measure();kick()});
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){measure();kick()});
+    measure();kick();
+  }
+
+  /* reveal + counters */
+  var fmt=new Intl.NumberFormat('en-US');
+  function count(el){var to=+el.dataset.count,t0=performance.now(),dur=1900;
+    (function step(t){var k=clamp((t-t0)/dur,0,1),e=1-Math.pow(1-k,4);el.textContent=fmt.format(Math.round(to*e));if(k<1)requestAnimationFrame(step)})(t0)}
+  var io=new IntersectionObserver(function(es){es.forEach(function(en){
+    if(!en.isIntersecting)return;en.target.classList.add('go');
+    en.target.querySelectorAll('[data-count]').forEach(function(c){reduce?c.textContent=fmt.format(+c.dataset.count):count(c)});
+    io.unobserve(en.target)})},{threshold:.25});
+  document.querySelectorAll('.rv').forEach(function(n){if(reduce)n.classList.add('go');io.observe(n)});
+})();
+</script>
+</body>
+</html>
